@@ -3,18 +3,29 @@
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = dirname(HERE);
-const CURRICULUM = join(HERE, "Curriculum.md");
-const TEMPLATE = join(HERE, "README.template.md");
-const DICT_DIR = join(ROOT, "dictionary");
-const OUTPUT = join(ROOT, "README.md");
+
+// Idioma de la edicion a generar. --lang=es produce README-es.md desde
+// dictionary-es/ + Curriculum-es.md. Sin el flag, comportamiento original.
+const LANG_ARG = process.argv.find((a) => a.startsWith("--lang="));
+const LANG = LANG_ARG ? LANG_ARG.slice("--lang=".length) : "en";
+if (LANG !== "en" && LANG !== "es") {
+  console.error(`idioma no soportado: ${LANG} (usa en o es)`);
+  process.exit(1);
+}
+const SUF = LANG === "en" ? "" : `-${LANG}`;
+
+const CURRICULUM = join(HERE, `Curriculum${SUF}.md`);
+const TEMPLATE = join(HERE, `README${SUF}.template.md`);
+const DICT_DIR = join(ROOT, `dictionary${SUF}`);
+const OUTPUT = join(ROOT, `README${SUF}.md`);
 const MARKER = "<!-- CURRICULUM -->";
 const TOC_MARKER = "<!-- TOC -->";
 
-const SECTION_RE = /^## Section \d+ — .+$/;
+const SECTION_RE = /^## (Section|Sección) \d+ — .+$/;
 const BULLET_RE = /^- (.+)$/;
 const LINK_RE = /\[([^\]]+)\]\(\.\/([^)]+)\.md\)/g;
 
@@ -46,7 +57,7 @@ function parseCurriculum(text: string): Section[] {
     if (line.startsWith("## ")) {
       if (!SECTION_RE.test(line)) {
         fail(
-          `Curriculum.md:${lineNo}: section heading must match "## Section N — Title" (em-dash required): ${line}`
+          `${basename(CURRICULUM)}:${lineNo}: section heading must match "## Section N — Title" or "## Sección N — Title" (em-dash required): ${line}`
         );
       }
       current = { heading: line.slice(3), terms: [] };
@@ -56,7 +67,9 @@ function parseCurriculum(text: string): Section[] {
 
     if (line.startsWith("- ")) {
       if (!current)
-        fail(`Curriculum.md:${lineNo}: bullet before any section heading`);
+        fail(
+          `${basename(CURRICULUM)}:${lineNo}: bullet before any section heading`
+        );
       const m = line.match(BULLET_RE);
       if (!m || !m[1])
         fail(`Curriculum.md:${lineNo}: malformed bullet: ${line}`);
@@ -155,8 +168,9 @@ function main(): void {
   const banner =
     "<!--\n" +
     "  GENERATED FILE — DO NOT EDIT.\n" +
-    "  Source: dictionary/*.md, internal/Curriculum.md, internal/README.template.md\n" +
-    "  Regenerate: npm run generate\n" +
+    `  Source: dictionary${SUF}/*.md, internal/Curriculum${SUF}.md, internal/README${SUF}.template.md
+` +
+    `  Regenerate: npm run generate${LANG === "en" ? "" : ":" + LANG}\n` +
     "-->\n\n";
   writeFileSync(
     OUTPUT,
