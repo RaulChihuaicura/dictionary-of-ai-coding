@@ -1,0 +1,840 @@
+<title>Diccionario de AI Coding</title>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"
+/>
+<style>
+  :root {
+    --ground: #f7f8f8;
+    --surface: #ffffff;
+    --surface-sunk: #eef1f1;
+    --ink: #1b2327;
+    --ink-soft: #5a686e;
+    --ink-faint: #8d9a9f;
+    --line: #dfe4e5;
+    --line-soft: #ebeeee;
+    --accent: #38484e;
+    --accent-on: #ffffff;
+    --mark: #c12637;
+    --hit: #fbe6c9;
+    --shadow:
+      0 1px 2px rgba(27, 35, 39, 0.06), 0 8px 24px rgba(27, 35, 39, 0.06);
+
+    --sans: "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14191c;
+      --surface: #1b2226;
+      --surface-sunk: #101517;
+      --ink: #e6ebec;
+      --ink-soft: #a3b0b5;
+      --ink-faint: #74838a;
+      --line: #2c363b;
+      --line-soft: #232c30;
+      --accent: #8fa8b2;
+      --accent-on: #101517;
+      --mark: #e4586a;
+      --hit: #4a3a1c;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #14191c;
+    --surface: #1b2226;
+    --surface-sunk: #101517;
+    --ink: #e6ebec;
+    --ink-soft: #a3b0b5;
+    --ink-faint: #74838a;
+    --line: #2c363b;
+    --line-soft: #232c30;
+    --accent: #8fa8b2;
+    --accent-on: #101517;
+    --mark: #e4586a;
+    --hit: #4a3a1c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ---------- barra lateral ---------- */
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 20px 20px 14px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .brand p {
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .find {
+    padding: 0 20px 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .find input {
+    width: 100%;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface-sunk);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px 8px 30px;
+  }
+
+  .find input::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .find input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .find svg {
+    position: absolute;
+    left: 29px;
+    top: 9px;
+    width: 14px;
+    height: 14px;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  .find .tally {
+    font-size: 11px;
+    color: var(--ink-faint);
+    padding: 6px 2px 0;
+    font-variant-numeric: tabular-nums;
+    min-height: 17px;
+  }
+
+  .list {
+    overflow-y: auto;
+    padding: 0 12px 24px;
+    flex: 1;
+  }
+
+  .grp {
+    margin-bottom: 14px;
+  }
+
+  .grp > h2 {
+    margin: 0;
+    padding: 8px 8px 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .list button {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    background: none;
+    border: 0;
+    border-left: 2px solid transparent;
+    border-radius: 0 5px 5px 0;
+    padding: 5px 8px;
+    cursor: pointer;
+  }
+
+  .list button:hover {
+    background: var(--surface-sunk);
+    color: var(--ink);
+  }
+
+  .list button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .list button[aria-current="true"] {
+    background: var(--surface-sunk);
+    border-left-color: var(--mark);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .list button .n {
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    flex: none;
+  }
+
+  .empty {
+    padding: 10px 8px;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- lectura ---------- */
+
+  .main {
+    padding: 0 40px 96px;
+    min-width: 0;
+  }
+
+  .entry {
+    max-width: 68ch;
+    margin-inline: auto;
+    padding-top: 44px;
+  }
+
+  .eyebrow {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+
+  .entry > h2 {
+    font-size: 34px;
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .body {
+    font-family: var(--serif);
+    font-size: 16.5px;
+    line-height: 1.62;
+  }
+  .body p {
+    margin: 18px 0;
+  }
+  .body strong {
+    font-weight: 600;
+  }
+  .body code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--surface-sunk);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 1px 4px;
+  }
+
+  .body .tw {
+    overflow-x: auto;
+    margin: 22px 0;
+  }
+  .body table {
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    width: 100%;
+  }
+  .body th,
+  .body td {
+    text-align: left;
+    vertical-align: top;
+    padding: 8px 14px 8px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .body th {
+    font-weight: 600;
+    color: var(--ink-faint);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom-color: var(--line);
+  }
+
+  a.x {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+    cursor: pointer;
+  }
+  a.x:hover {
+    text-decoration-color: var(--accent);
+  }
+  a.x:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .block {
+    margin: 24px 0;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .block > .lbl {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .block p {
+    margin: 8px 0;
+  }
+  .block p:last-child {
+    margin-bottom: 0;
+  }
+  .avoid {
+    font-family: var(--serif);
+  }
+  .avoid em {
+    font-style: normal;
+    font-weight: 600;
+    font-family: var(--sans);
+    font-size: 0.82em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mark);
+  }
+
+  .also {
+    margin-top: 34px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .also h3 {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chips button {
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 11px;
+    cursor: pointer;
+  }
+  .chips button:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .chips button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  /* ---------- portada ---------- */
+
+  .home {
+    max-width: 72ch;
+    margin-inline: auto;
+    padding-top: 44px;
+  }
+  .home > h2 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .home > p {
+    font-family: var(--serif);
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+    max-width: 62ch;
+  }
+  .home .keys {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-top: 18px;
+  }
+  kbd {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--ink-soft);
+  }
+  .secs {
+    display: grid;
+    gap: 1px;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 26px;
+  }
+  .secs > div {
+    background: var(--surface);
+    padding: 13px 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .secs .t {
+    font-size: 13.5px;
+    font-weight: 500;
+    flex: 1;
+  }
+  .secs .c {
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .secs .top {
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- pie ---------- */
+
+  .foot {
+    max-width: 68ch;
+    margin-top: 56px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--ink-faint);
+  }
+  .foot a {
+    color: var(--ink-soft);
+  }
+
+  mark {
+    background: var(--hit);
+    color: inherit;
+    border-radius: 2px;
+  }
+
+  .bar {
+    display: none;
+  }
+
+  /* ---------- angosto ---------- */
+
+  @media (max-width: 900px) {
+    .app {
+      grid-template-columns: 1fr;
+    }
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+    .bar button {
+      font: inherit;
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--surface-sunk);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 5px 11px;
+      cursor: pointer;
+    }
+    .bar span {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .side {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      height: 100dvh;
+      border-right: 0;
+    }
+    body:not(.open) .side {
+      display: none;
+    }
+    .main {
+      padding: 0 20px 80px;
+    }
+    .entry,
+    .home {
+      padding-top: 26px;
+    }
+    .entry > h2 {
+      font-size: 27px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<div class="bar">
+  <button id="toggle" type="button">Términos</button>
+  <span id="barTitle">Diccionario de AI Coding</span>
+</div>
+
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <h1>Diccionario de AI Coding</h1>
+      <p id="brandSub"></p>
+    </div>
+    <div class="find">
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        aria-hidden="true"
+      >
+        <circle cx="7" cy="7" r="4.5"></circle>
+        <path d="M10.5 10.5 14 14"></path>
+      </svg>
+      <input
+        id="q"
+        type="search"
+        placeholder="Buscar término o definición"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Buscar"
+      />
+      <div class="tally" id="tally"></div>
+    </div>
+    <nav class="list" id="list" aria-label="Términos"></nav>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+  const DATOS = /*__DATOS__*/ null;
+
+  const $ = (s) => document.querySelector(s);
+  const list = $("#list"),
+    main = $("#main"),
+    q = $("#q"),
+    tally = $("#tally");
+
+  const plano = (s) =>
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+  DATOS.entradas.forEach((e) => {
+    e.k = plano(e.termino + " " + e.texto);
+    e.kt = plano(e.termino);
+  });
+  const porSlug = new Map(DATOS.entradas.map((e) => [e.slug, e]));
+
+  let activo = null,
+    filtradas = DATOS.entradas,
+    marcado = -1;
+
+  $("#brandSub").textContent =
+    DATOS.entradas.length +
+    " términos · " +
+    DATOS.secciones.length +
+    " secciones";
+
+  function pintarLista() {
+    const vis = new Set(filtradas.map((e) => e.slug));
+    list.innerHTML = "";
+    if (!filtradas.length) {
+      const d = document.createElement("p");
+      d.className = "empty";
+      d.textContent =
+        "Sin resultados. Prueba con otra palabra, o con el término en inglés.";
+      list.appendChild(d);
+      return;
+    }
+    DATOS.secciones.forEach((sec) => {
+      const suyos = sec.terminos
+        .map((t) => porSlug.get(t))
+        .filter((e) => e && vis.has(e.slug));
+      if (!suyos.length) return;
+      const g = document.createElement("div");
+      g.className = "grp";
+      const h = document.createElement("h2");
+      h.textContent = sec.titulo;
+      g.appendChild(h);
+      suyos.forEach((e) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.slug = e.slug;
+        if (activo && e.slug === activo.slug)
+          b.setAttribute("aria-current", "true");
+        const n = document.createElement("span");
+        n.textContent = e.termino;
+        const c = document.createElement("span");
+        c.className = "n";
+        c.textContent = e.entrantes || "";
+        c.title = e.entrantes + " entradas la referencian";
+        b.append(n, c);
+        b.addEventListener("click", () => abrir(e.slug, true));
+        g.appendChild(b);
+      });
+      list.appendChild(g);
+    });
+  }
+
+  function buscar() {
+    const t = plano(q.value.trim());
+    marcado = -1;
+    if (!t) {
+      filtradas = DATOS.entradas;
+      tally.textContent = "";
+    } else {
+      filtradas = DATOS.entradas.filter((e) => e.k.includes(t));
+      filtradas.sort(
+        (a, b) => (b.kt.includes(t) ? 1 : 0) - (a.kt.includes(t) ? 1 : 0)
+      );
+      const n = filtradas.length;
+      tally.textContent =
+        n === 0 ? "sin resultados" : n === 1 ? "1 término" : n + " términos";
+    }
+    pintarLista();
+  }
+
+  function portada() {
+    activo = null;
+    document.title = "Diccionario de AI Coding";
+    $("#barTitle").textContent = "Diccionario de AI Coding";
+    const top = [...DATOS.entradas]
+      .sort((a, b) => b.entrantes - a.entrantes)
+      .slice(0, 3)
+      .map((e) => e.termino)
+      .join(" · ");
+    const filas = DATOS.secciones
+      .map((s) => {
+        const suyos = s.terminos.map((t) => porSlug.get(t)).filter(Boolean);
+        const cab = [...suyos]
+          .sort((a, b) => b.entrantes - a.entrantes)
+          .slice(0, 3)
+          .map((e) => e.termino)
+          .join(" · ");
+        return (
+          '<div><span class="t">' +
+          esc(s.titulo) +
+          '</span><span class="top">' +
+          esc(cab) +
+          '</span><span class="c">' +
+          suyos.length +
+          "</span></div>"
+        );
+      })
+      .join("");
+    main.innerHTML =
+      '<div class="home"><h2>El vocabulario del AI coding, en español</h2>' +
+      "<p>Los títulos se mantienen en inglés a propósito: es la palabra que vas a encontrar en la documentación y en tu harness, así que es la llave con la que vas a buscar. El buscador mira también el cuerpo de las definiciones, así que escribir <em>ventana</em> encuentra <em>Context window</em>.</p>" +
+      "<p>Los términos más referenciados por el resto del diccionario son " +
+      esc(top) +
+      ". Buen lugar para partir.</p>" +
+      '<div class="secs">' +
+      filas +
+      "</div>" +
+      '<p class="keys"><kbd>/</kbd> buscar · <kbd>↑</kbd><kbd>↓</kbd> recorrer · <kbd>Enter</kbd> abrir · <kbd>Esc</kbd> limpiar</p>' +
+      pie() +
+      "</div>";
+  }
+
+  function pie() {
+    return (
+      '<p class="foot">Traducción al español de <a href="https://github.com/mattpocock/dictionary-of-ai-coding" target="_blank" rel="noopener">dictionary-of-ai-coding</a>, de Matt Pocock. ' +
+      "Los términos técnicos se mantienen en inglés según el glosario de la edición. Uso interno.</p>"
+    );
+  }
+
+  function esc(s) {
+    return String(s).replace(
+      /[&<>"]/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]
+    );
+  }
+
+  function abrir(slug, cerrar) {
+    const e = porSlug.get(slug);
+    if (!e) return portada();
+    activo = e;
+    document.title = e.termino + " · Diccionario de AI Coding";
+    $("#barTitle").textContent = e.termino;
+    const chips = e.salientes.map((s) => porSlug.get(s)).filter(Boolean);
+    main.innerHTML =
+      '<article class="entry"><p class="eyebrow">' +
+      esc(e.seccion) +
+      "</p>" +
+      "<h2>" +
+      esc(e.termino) +
+      "</h2>" +
+      '<p class="lede">' +
+      esc(e.descripcion) +
+      "</p>" +
+      '<div class="body">' +
+      e.html +
+      "</div>" +
+      (chips.length
+        ? '<div class="also"><h3>Ver también</h3><div class="chips">' +
+          chips
+            .map(
+              (c) =>
+                '<button type="button" data-slug="' +
+                esc(c.slug) +
+                '">' +
+                esc(c.termino) +
+                "</button>"
+            )
+            .join("") +
+          "</div></div>"
+        : "") +
+      pie() +
+      "</article>";
+    main.querySelectorAll("[data-slug]").forEach((el) =>
+      el.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        abrir(el.dataset.slug, true);
+      })
+    );
+    const u = new URL(location.href);
+    u.searchParams.set("term", slug);
+    history.replaceState(null, "", u);
+    pintarLista();
+    main.scrollIntoView({ block: "start" });
+    if (cerrar) document.body.classList.remove("open");
+  }
+
+  q.addEventListener("input", buscar);
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "/" && document.activeElement !== q) {
+      ev.preventDefault();
+      q.focus();
+      q.select();
+      return;
+    }
+    if (ev.key === "Escape") {
+      q.value = "";
+      buscar();
+      q.blur();
+      return;
+    }
+    if (document.activeElement !== q) return;
+    if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+      ev.preventDefault();
+      if (!filtradas.length) return;
+      marcado =
+        ev.key === "ArrowDown"
+          ? Math.min(marcado + 1, filtradas.length - 1)
+          : Math.max(marcado - 1, 0);
+      const b = list.querySelector(
+        '[data-slug="' + CSS.escape(filtradas[marcado].slug) + '"]'
+      );
+      if (b) {
+        b.focus();
+        b.scrollIntoView({ block: "nearest" });
+      }
+    }
+    if (ev.key === "Enter" && filtradas.length) {
+      ev.preventDefault();
+      abrir(filtradas[marcado >= 0 ? marcado : 0].slug, true);
+    }
+  });
+
+  $("#toggle").addEventListener("click", () =>
+    document.body.classList.toggle("open")
+  );
+
+  buscar();
+  const inicial = new URLSearchParams(location.search).get("term");
+  if (inicial && porSlug.has(inicial)) abrir(inicial, false);
+  else portada();
+</script>
