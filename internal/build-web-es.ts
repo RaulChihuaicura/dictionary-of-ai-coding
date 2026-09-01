@@ -6,13 +6,15 @@
 //   diccionario-es.html                     documento completo, para abrir local o desde Drive
 //   internal/artifact-diccionario-es.html   fragmento sin <html>/<head>/<body>, para publicar como Artifact
 //
-// El markdown se renderiza ACA, en tiempo de build, no en el navegador: la
-// pagina no debe depender de ningun CDN, porque tiene que funcionar offline.
+// El markdown se renderiza ACA, en tiempo de build, no en el navegador, y lo
+// mismo vale para el layout del grafo: la pagina no debe depender de ningun
+// CDN, porque tiene que funcionar offline.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { marked } from "marked";
+import { calcularLayout } from "./layout-grafo.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = dirname(HERE);
@@ -188,12 +190,46 @@ function main(): void {
 
   for (const e of entradas) e.entrantes = entrantes.get(e.slug) ?? 0;
 
+  // ---- grafo -------------------------------------------------------------
+  // Una arista por par de terminos que se referencian, sin direccion y sin
+  // repetir: si A enlaza a B y B enlaza a A, es la misma linea en el mapa.
+  const indice = new Map<string, number>(entradas.map((e, i) => [e.slug, i]));
+  const vistas = new Set<string>();
+  const aristas: [number, number][] = [];
+  for (const [i, e] of entradas.entries()) {
+    for (const s of e.salientes) {
+      const j = indice.get(s);
+      if (j === undefined || j === i) continue;
+      const clave = i < j ? `${i}-${j}` : `${j}-${i}`;
+      if (vistas.has(clave)) continue;
+      vistas.add(clave);
+      aristas.push([i, j]);
+    }
+  }
+
+  const pos = calcularLayout(entradas.length, aristas);
+  entradas.forEach((e, i) => {
+    e.x = pos[i].x;
+    e.y = pos[i].y;
+  });
+
+  // vecinos por indice, para encender el vecindario del termino elegido
+  const vecinos: number[][] = entradas.map(() => []);
+  for (const [a, b] of aristas) {
+    vecinos[a].push(b);
+    vecinos[b].push(a);
+  }
+  entradas.forEach((e, i) => {
+    e.vecinos = vecinos[i];
+  });
+
   const datos = {
     secciones: secciones.map((s) => ({
       titulo: s.titulo,
       terminos: s.terminos.map(slug),
     })),
     entradas,
+    aristas,
   };
 
   // `<` escapado para que ningun "</script>" del contenido cierre el bloque.
@@ -214,9 +250,9 @@ function main(): void {
       "\n</body>\n</html>\n"
   );
 
-  const totalLinks = entradas.reduce((n, e) => n + e.salientes.length, 0);
+  const sueltos = entradas.filter((e) => e.vecinos.length === 0).length;
   console.log(
-    `${entradas.length} entradas · ${secciones.length} secciones · ${totalLinks} destinos unicos enlazados`
+    `${entradas.length} entradas · ${secciones.length} secciones · ${aristas.length} aristas · ${sueltos} nodos sin conexion`
   );
   console.log(`escrito ${SALIDA_DOC}`);
   console.log(`escrito ${SALIDA_FRAG}`);

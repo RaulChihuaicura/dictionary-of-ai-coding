@@ -14,11 +14,10 @@
     --line: #dfe4e5;
     --line-soft: #ebeeee;
     --accent: #38484e;
-    --accent-on: #ffffff;
     --mark: #c12637;
     --hit: #fbe6c9;
-    --shadow:
-      0 1px 2px rgba(27, 35, 39, 0.06), 0 8px 24px rgba(27, 35, 39, 0.06);
+    --nodo: #7d8f97;
+    --nodo-tenue: #d3dadc;
 
     --sans: "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
     --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
@@ -36,10 +35,10 @@
       --line: #2c363b;
       --line-soft: #232c30;
       --accent: #8fa8b2;
-      --accent-on: #101517;
       --mark: #e4586a;
       --hit: #4a3a1c;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+      --nodo: #7c9099;
+      --nodo-tenue: #2b3639;
     }
   }
 
@@ -53,10 +52,10 @@
     --line: #2c363b;
     --line-soft: #232c30;
     --accent: #8fa8b2;
-    --accent-on: #101517;
     --mark: #e4586a;
     --hit: #4a3a1c;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    --nodo: #7c9099;
+    --nodo-tenue: #2b3639;
   }
 
   * {
@@ -73,54 +72,43 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .app {
-    display: grid;
-    grid-template-columns: 300px minmax(0, 1fr);
-    min-height: 100vh;
-  }
+  /* ---------- barra superior ---------- */
 
-  /* ---------- barra lateral ---------- */
-
-  .side {
+  .top {
     display: flex;
-    flex-direction: column;
-    gap: 0;
+    align-items: center;
+    gap: 18px;
+    height: 56px;
+    padding: 0 18px;
     background: var(--surface);
-    border-right: 1px solid var(--line);
-    height: 100vh;
+    border-bottom: 1px solid var(--line);
     position: sticky;
     top: 0;
+    z-index: 5;
   }
 
-  .brand {
+  .top .name {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 20px 20px 14px;
+    align-items: baseline;
+    gap: 9px;
+    flex: none;
   }
-
-  .brand h1 {
-    margin: 0;
-    font-size: 15px;
+  .top .name b {
+    font-size: 14.5px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
-
-  .brand p {
-    margin: 0;
+  .top .name span {
     font-size: 11.5px;
     color: var(--ink-faint);
-    letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
   }
 
   .find {
-    padding: 0 20px 12px;
     position: relative;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
+    max-width: 420px;
   }
-
   .find input {
     width: 100%;
     font: inherit;
@@ -129,46 +117,143 @@
     background: var(--surface-sunk);
     border: 1px solid var(--line);
     border-radius: 6px;
-    padding: 8px 10px 8px 30px;
+    padding: 7px 34px 7px 30px;
   }
-
   .find input::placeholder {
     color: var(--ink-faint);
   }
-
   .find input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
-
   .find svg {
     position: absolute;
-    left: 29px;
-    top: 9px;
+    left: 9px;
+    top: 8px;
     width: 14px;
     height: 14px;
     color: var(--ink-faint);
     pointer-events: none;
   }
-
   .find .tally {
+    position: absolute;
+    right: 10px;
+    top: 8px;
     font-size: 11px;
     color: var(--ink-faint);
-    padding: 6px 2px 0;
     font-variant-numeric: tabular-nums;
-    min-height: 17px;
+    pointer-events: none;
   }
 
-  .list {
-    overflow-y: auto;
-    padding: 0 12px 24px;
-    flex: 1;
+  .views {
+    display: flex;
+    gap: 2px;
+    background: var(--surface-sunk);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 2px;
+    margin-left: auto;
+    flex: none;
   }
+  .views button {
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: none;
+    border: 0;
+    border-radius: 5px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .views button[aria-pressed="true"] {
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .views button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  /* ---------- armazon ---------- */
+
+  .app {
+    display: grid;
+    grid-template-columns: 292px minmax(0, 1fr);
+    height: calc(100vh - 56px);
+  }
+
+  .graph {
+    display: none;
+    position: relative;
+    min-width: 0;
+    background: var(--ground);
+  }
+  .graph canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .graph .pista {
+    position: absolute;
+    left: 20px;
+    bottom: 16px;
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  body[data-vista="mapa"] .app {
+    grid-template-columns: minmax(0, 1fr) 468px;
+  }
+  body[data-vista="mapa"] .side {
+    display: none;
+  }
+  body[data-vista="mapa"] .graph {
+    display: block;
+  }
+  body[data-vista="mapa"] .main {
+    border-left: 1px solid var(--line);
+    background: var(--surface);
+    padding: 0 30px 60px;
+  }
+  body[data-vista="mapa"] .entry,
+  body[data-vista="mapa"] .home {
+    max-width: none;
+    padding-top: 30px;
+  }
+  body[data-vista="mapa"] .entry > h2 {
+    font-size: 30px;
+  }
+  body[data-vista="mapa"] .block {
+    background: var(--surface-sunk);
+  }
+  body[data-vista="mapa"] .secs .top2 {
+    display: none;
+  }
+  body[data-vista="mapa"] .secs > div {
+    padding: 11px 14px;
+  }
+
+  .side {
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 10px 12px 28px;
+  }
+
+  .main {
+    overflow-y: auto;
+    padding: 0 40px 96px;
+    min-width: 0;
+  }
+
+  /* ---------- lista ---------- */
 
   .grp {
     margin-bottom: 14px;
   }
-
   .grp > h2 {
     margin: 0;
     padding: 8px 8px 6px;
@@ -178,8 +263,7 @@
     text-transform: uppercase;
     color: var(--ink-faint);
   }
-
-  .list button {
+  .side button {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -196,31 +280,26 @@
     padding: 5px 8px;
     cursor: pointer;
   }
-
-  .list button:hover {
+  .side button:hover {
     background: var(--surface-sunk);
     color: var(--ink);
   }
-
-  .list button:focus-visible {
+  .side button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
-
-  .list button[aria-current="true"] {
+  .side button[aria-current="true"] {
     background: var(--surface-sunk);
     border-left-color: var(--mark);
     color: var(--ink);
     font-weight: 500;
   }
-
-  .list button .n {
+  .side button .n {
     font-size: 10.5px;
     color: var(--ink-faint);
     font-variant-numeric: tabular-nums;
     flex: none;
   }
-
   .empty {
     padding: 10px 8px;
     font-size: 13px;
@@ -228,11 +307,6 @@
   }
 
   /* ---------- lectura ---------- */
-
-  .main {
-    padding: 0 40px 96px;
-    min-width: 0;
-  }
 
   .entry {
     max-width: 68ch;
@@ -356,13 +430,7 @@
   .avoid {
     font-family: var(--serif);
   }
-  .avoid em {
-    font-style: normal;
-    font-weight: 600;
-    font-family: var(--sans);
-    font-size: 0.82em;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  .avoid > .lbl {
     color: var(--mark);
   }
 
@@ -467,12 +535,10 @@
     color: var(--ink-faint);
     font-variant-numeric: tabular-nums;
   }
-  .secs .top {
+  .secs .top2 {
     font-size: 12px;
     color: var(--ink-faint);
   }
-
-  /* ---------- pie ---------- */
 
   .foot {
     max-width: 68ch;
@@ -493,50 +559,51 @@
     border-radius: 2px;
   }
 
-  .bar {
+  .movil {
     display: none;
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--ink);
+    background: var(--surface-sunk);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 11px;
+    cursor: pointer;
+    flex: none;
   }
 
   /* ---------- angosto ---------- */
 
   @media (max-width: 900px) {
-    .app {
+    .app,
+    body[data-vista="mapa"] .app {
       grid-template-columns: 1fr;
     }
-    .bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 3;
+    .views {
+      display: none;
     }
-    .bar button {
-      font: inherit;
-      font-size: 13px;
-      color: var(--ink);
-      background: var(--surface-sunk);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 5px 11px;
-      cursor: pointer;
+    body[data-vista="mapa"] .graph {
+      display: none;
     }
-    .bar span {
-      font-size: 13px;
-      font-weight: 500;
+    body[data-vista="mapa"] .main {
+      border-left: 0;
+      background: transparent;
+      padding: 0 20px 80px;
     }
     .side {
-      position: fixed;
-      inset: 0;
-      z-index: 4;
-      height: 100dvh;
-      border-right: 0;
-    }
-    body:not(.open) .side {
       display: none;
+    }
+    body.abierto .side {
+      display: block;
+      position: fixed;
+      inset: 56px 0 0;
+      z-index: 4;
+    }
+    .top .name span {
+      display: none;
+    }
+    .movil {
+      display: inline-flex;
     }
     .main {
       padding: 0 20px 80px;
@@ -558,41 +625,44 @@
   }
 </style>
 
-<div class="bar">
-  <button id="toggle" type="button">Términos</button>
-  <span id="barTitle">Diccionario de AI Coding</span>
-</div>
+<header class="top">
+  <div class="name"><b>Diccionario de AI Coding</b><span id="sub"></span></div>
+  <div class="find">
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.6"
+      aria-hidden="true"
+    >
+      <circle cx="7" cy="7" r="4.5"></circle>
+      <path d="M10.5 10.5 14 14"></path>
+    </svg>
+    <input
+      id="q"
+      type="search"
+      placeholder="Buscar término o definición"
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Buscar"
+    />
+    <span class="tally" id="tally"></span>
+  </div>
+  <button class="movil" id="movil" type="button">Términos</button>
+  <div class="views" role="group" aria-label="Vista">
+    <button id="vLista" type="button" aria-pressed="true">Lista</button>
+    <button id="vMapa" type="button" aria-pressed="false">Mapa</button>
+  </div>
+</header>
 
 <div class="app">
+  <div class="graph" id="graph">
+    <canvas id="lienzo"></canvas>
+    <p class="pista" id="pista"></p>
+  </div>
   <aside class="side" id="side">
-    <div class="brand">
-      <h1>Diccionario de AI Coding</h1>
-      <p id="brandSub"></p>
-    </div>
-    <div class="find">
-      <svg
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.6"
-        aria-hidden="true"
-      >
-        <circle cx="7" cy="7" r="4.5"></circle>
-        <path d="M10.5 10.5 14 14"></path>
-      </svg>
-      <input
-        id="q"
-        type="search"
-        placeholder="Buscar término o definición"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="Buscar"
-      />
-      <div class="tally" id="tally"></div>
-    </div>
-    <nav class="list" id="list" aria-label="Términos"></nav>
+    <nav id="list" aria-label="Términos"></nav>
   </aside>
-
   <main class="main" id="main"></main>
 </div>
 
@@ -604,6 +674,9 @@
     main = $("#main"),
     q = $("#q"),
     tally = $("#tally");
+  const lienzo = $("#lienzo"),
+    ctx = lienzo.getContext("2d"),
+    pista = $("#pista");
 
   const plano = (s) =>
     s
@@ -611,21 +684,32 @@
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase();
 
-  DATOS.entradas.forEach((e) => {
+  DATOS.entradas.forEach((e, i) => {
     e.k = plano(e.termino + " " + e.texto);
     e.kt = plano(e.termino);
+    e.i = i;
   });
   const porSlug = new Map(DATOS.entradas.map((e) => [e.slug, e]));
 
   let activo = null,
     filtradas = DATOS.entradas,
-    marcado = -1;
+    marcado = -1,
+    encima = -1;
 
-  $("#brandSub").textContent =
+  $("#sub").textContent =
     DATOS.entradas.length +
     " términos · " +
-    DATOS.secciones.length +
-    " secciones";
+    DATOS.aristas.length +
+    " conexiones";
+
+  function esc(s) {
+    return String(s).replace(
+      /[&<>"]/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]
+    );
+  }
+
+  /* ---------- lista ---------- */
 
   function pintarLista() {
     const vis = new Set(filtradas.map((e) => e.slug));
@@ -679,17 +763,21 @@
       filtradas.sort(
         (a, b) => (b.kt.includes(t) ? 1 : 0) - (a.kt.includes(t) ? 1 : 0)
       );
-      const n = filtradas.length;
-      tally.textContent =
-        n === 0 ? "sin resultados" : n === 1 ? "1 término" : n + " términos";
+      tally.textContent = String(filtradas.length);
     }
     pintarLista();
+    dibujar();
+  }
+
+  /* ---------- lectura ---------- */
+
+  function pie() {
+    return '<p class="foot">Traducción al español de <a href="https://github.com/mattpocock/dictionary-of-ai-coding" target="_blank" rel="noopener">dictionary-of-ai-coding</a>, de Matt Pocock. Los términos técnicos se mantienen en inglés según el glosario de la edición. Uso interno.</p>';
   }
 
   function portada() {
     activo = null;
     document.title = "Diccionario de AI Coding";
-    $("#barTitle").textContent = "Diccionario de AI Coding";
     const top = [...DATOS.entradas]
       .sort((a, b) => b.entrantes - a.entrantes)
       .slice(0, 3)
@@ -706,7 +794,7 @@
         return (
           '<div><span class="t">' +
           esc(s.titulo) +
-          '</span><span class="top">' +
+          '</span><span class="top2">' +
           esc(cab) +
           '</span><span class="c">' +
           suyos.length +
@@ -719,27 +807,14 @@
       "<p>Los títulos se mantienen en inglés a propósito: es la palabra que vas a encontrar en la documentación y en tu harness, así que es la llave con la que vas a buscar. El buscador mira también el cuerpo de las definiciones, así que escribir <em>ventana</em> encuentra <em>Context window</em>.</p>" +
       "<p>Los términos más referenciados por el resto del diccionario son " +
       esc(top) +
-      ". Buen lugar para partir.</p>" +
+      ". Buen lugar para partir, o abre el <b>Mapa</b> para ver con qué se conecta cada uno.</p>" +
       '<div class="secs">' +
       filas +
       "</div>" +
       '<p class="keys"><kbd>/</kbd> buscar · <kbd>↑</kbd><kbd>↓</kbd> recorrer · <kbd>Enter</kbd> abrir · <kbd>Esc</kbd> limpiar</p>' +
       pie() +
       "</div>";
-  }
-
-  function pie() {
-    return (
-      '<p class="foot">Traducción al español de <a href="https://github.com/mattpocock/dictionary-of-ai-coding" target="_blank" rel="noopener">dictionary-of-ai-coding</a>, de Matt Pocock. ' +
-      "Los términos técnicos se mantienen en inglés según el glosario de la edición. Uso interno.</p>"
-    );
-  }
-
-  function esc(s) {
-    return String(s).replace(
-      /[&<>"]/g,
-      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]
-    );
+    dibujar();
   }
 
   function abrir(slug, cerrar) {
@@ -747,7 +822,6 @@
     if (!e) return portada();
     activo = e;
     document.title = e.termino + " · Diccionario de AI Coding";
-    $("#barTitle").textContent = e.termino;
     const chips = e.salientes.map((s) => porSlug.get(s)).filter(Boolean);
     main.innerHTML =
       '<article class="entry"><p class="eyebrow">' +
@@ -763,7 +837,7 @@
       e.html +
       "</div>" +
       (chips.length
-        ? '<div class="also"><h3>Ver también</h3><div class="chips">' +
+        ? '<div class="also"><h3>Conecta con</h3><div class="chips">' +
           chips
             .map(
               (c) =>
@@ -788,9 +862,174 @@
     u.searchParams.set("term", slug);
     history.replaceState(null, "", u);
     pintarLista();
-    main.scrollIntoView({ block: "start" });
-    if (cerrar) document.body.classList.remove("open");
+    main.scrollTop = 0;
+    if (cerrar) document.body.classList.remove("abierto");
+    dibujar();
   }
+
+  /* ---------- mapa ---------- */
+
+  const css = (n) =>
+    getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let T = { s: 1, ox: 0, oy: 0 };
+
+  function radio(e) {
+    return Math.min(15, 3.2 + Math.sqrt(e.entrantes) * 1.75);
+  }
+
+  function medir() {
+    const r = lienzo.parentElement.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    lienzo.width = Math.max(1, Math.round(r.width * dpr));
+    lienzo.height = Math.max(1, Math.round(r.height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = 56;
+    T.s = Math.max(10, Math.min(r.width - pad * 2, r.height - pad * 2));
+    T.ox = (r.width - T.s) / 2;
+    T.oy = (r.height - T.s) / 2;
+  }
+
+  const px = (e) => T.ox + e.x * T.s;
+  const py = (e) => T.oy + e.y * T.s;
+
+  function dibujar() {
+    if (document.body.dataset.vista !== "mapa") return;
+    const r = lienzo.parentElement.getBoundingClientRect();
+    ctx.clearRect(0, 0, r.width, r.height);
+
+    const hayBusqueda = q.value.trim().length > 0;
+    const enBusqueda = new Set(filtradas.map((e) => e.i));
+    const barrio = activo ? new Set([activo.i, ...activo.vecinos]) : null;
+
+    const cLinea = css("--nodo-tenue");
+    const cNodo = css("--nodo");
+    const cInk = css("--ink");
+    const cFaint = css("--ink-faint");
+    const cMark = css("--mark");
+    const sans = css("--sans");
+
+    for (const [a, b] of DATOS.aristas) {
+      const A = DATOS.entradas[a],
+        B = DATOS.entradas[b];
+      const viva = barrio ? barrio.has(a) && barrio.has(b) : false;
+      ctx.beginPath();
+      ctx.moveTo(px(A), py(A));
+      ctx.lineTo(px(B), py(B));
+      ctx.strokeStyle = viva ? cNodo : cLinea;
+      ctx.globalAlpha = viva ? 0.9 : barrio ? 0.3 : 0.6;
+      ctx.lineWidth = viva ? 1.3 : 0.8;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const e of DATOS.entradas) {
+      const esActivo = activo && e.i === activo.i;
+      const esVecino = barrio ? barrio.has(e.i) : false;
+      const apagado =
+        (barrio && !esVecino) || (hayBusqueda && !enBusqueda.has(e.i));
+      ctx.beginPath();
+      ctx.arc(px(e), py(e), radio(e) * (esActivo ? 1.3 : 1), 0, Math.PI * 2);
+      ctx.fillStyle = esActivo ? cMark : apagado ? cLinea : cNodo;
+      ctx.globalAlpha = apagado ? 0.45 : 1;
+      ctx.fill();
+      if (e.i === encima && !esActivo) {
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = cInk;
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    const rotulados = barrio
+      ? [...barrio].map((i) => DATOS.entradas[i])
+      : hayBusqueda
+        ? filtradas.slice(0, 14)
+        : [...DATOS.entradas]
+            .sort((a, b) => b.entrantes - a.entrantes)
+            .slice(0, 14);
+    if (encima >= 0) rotulados.push(DATOS.entradas[encima]);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    for (const e of rotulados) {
+      const esActivo = activo && e.i === activo.i;
+      ctx.font = (esActivo ? "600 13px " : "400 11.5px ") + sans;
+      ctx.fillStyle = esActivo ? cInk : cFaint;
+      ctx.fillText(e.termino, px(e), py(e) - radio(e) - 5);
+    }
+
+    pista.textContent = activo
+      ? activo.termino + " · " + activo.vecinos.length + " conexiones"
+      : "Clic en un nodo. El tamaño es cuántas entradas lo referencian.";
+  }
+
+  function nodoEn(cx, cy) {
+    let mejor = -1,
+      mejorD = 16;
+    for (const e of DATOS.entradas) {
+      const d = Math.hypot(px(e) - cx, py(e) - cy) - radio(e);
+      if (d < mejorD) {
+        mejorD = d;
+        mejor = e.i;
+      }
+    }
+    return mejor;
+  }
+
+  lienzo.addEventListener("mousemove", (ev) => {
+    const r = lienzo.getBoundingClientRect();
+    const i = nodoEn(ev.clientX - r.left, ev.clientY - r.top);
+    if (i !== encima) {
+      encima = i;
+      lienzo.style.cursor = i >= 0 ? "pointer" : "default";
+      dibujar();
+    }
+  });
+  lienzo.addEventListener("mouseleave", () => {
+    if (encima !== -1) {
+      encima = -1;
+      dibujar();
+    }
+  });
+  lienzo.addEventListener("click", (ev) => {
+    const r = lienzo.getBoundingClientRect();
+    const i = nodoEn(ev.clientX - r.left, ev.clientY - r.top);
+    if (i >= 0) abrir(DATOS.entradas[i].slug, false);
+  });
+
+  /* ---------- vistas ---------- */
+
+  function vista(v) {
+    document.body.dataset.vista = v;
+    $("#vLista").setAttribute("aria-pressed", String(v === "lista"));
+    $("#vMapa").setAttribute("aria-pressed", String(v === "mapa"));
+    const u = new URL(location.href);
+    if (v === "mapa") u.searchParams.set("vista", "mapa");
+    else u.searchParams.delete("vista");
+    history.replaceState(null, "", u);
+    if (v === "mapa") {
+      medir();
+      dibujar();
+    }
+  }
+
+  $("#vLista").addEventListener("click", () => vista("lista"));
+  $("#vMapa").addEventListener("click", () => vista("mapa"));
+  $("#movil").addEventListener("click", () =>
+    document.body.classList.toggle("abierto")
+  );
+
+  new ResizeObserver(() => {
+    if (document.body.dataset.vista === "mapa") {
+      medir();
+      dibujar();
+    }
+  }).observe($("#graph"));
+  matchMedia("(prefers-color-scheme: dark)").addEventListener(
+    "change",
+    dibujar
+  );
 
   q.addEventListener("input", buscar);
 
@@ -829,12 +1068,11 @@
     }
   });
 
-  $("#toggle").addEventListener("click", () =>
-    document.body.classList.toggle("open")
-  );
-
+  const par = new URLSearchParams(location.search);
+  document.body.dataset.vista = "lista";
   buscar();
-  const inicial = new URLSearchParams(location.search).get("term");
+  const inicial = par.get("term");
   if (inicial && porSlug.has(inicial)) abrir(inicial, false);
   else portada();
+  if (par.get("vista") === "mapa") vista("mapa");
 </script>
